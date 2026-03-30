@@ -119,7 +119,7 @@ export default function HomePage() {
             </span>
           </h1>
           <p className="hidden sm:block text-[#a89984] text-lg max-w-xl mx-auto">
-            Record bird sounds or upload an audio clip. Detects multiple species per recording.
+            Hold your device near a bird and tap the button. Detects multiple species per recording.
           </p>
           {/* R1 hint about PTT button */}
           <p className="sm:hidden text-[#928374] text-xs">Press the side button (PTT) or tap to record</p>
@@ -135,8 +135,8 @@ export default function HomePage() {
                 <Bird className="w-5 h-5 text-[#fabd2f]" />
               </div>
               <div>
-                <h2 className="font-bold text-[#ebdbb2]">Record or Upload</h2>
-                <p className="text-[#928374] text-xs">Hold near a bird and press record, or upload an audio file</p>
+                <h2 className="font-bold text-[#ebdbb2]">Listen</h2>
+                <p className="text-[#928374] text-xs">Hold near a bird and press the button to identify</p>
               </div>
             </div>
             <AudioRecorder
