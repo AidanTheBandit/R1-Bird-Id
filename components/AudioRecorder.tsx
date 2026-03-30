@@ -128,8 +128,10 @@ export function AudioRecorder({ onIdentified }: AudioRecorderProps) {
   }, [analyzeAudio, onIdentified]);
 
   const stopRecording = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    // Capture the final duration before stopping
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
     const finalDuration = recordingTimeRef.current;
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       const recorder = mediaRecorderRef.current;
@@ -182,7 +184,7 @@ export function AudioRecorder({ onIdentified }: AudioRecorderProps) {
       timerRef.current = setInterval(() => {
         recordingTimeRef.current += 1;
         setRecordingTime(recordingTimeRef.current);
-        if (recordingTimeRef.current >= 30) {
+        if (recordingTimeRef.current >= 30 && timerRef.current) {
           stopRecording();
         }
       }, 1000);
