@@ -14,10 +14,13 @@ interface AudioFeatures {
   amplitude: number;
 }
 
-interface IdentifyResult {
+export interface DetectedBird {
   bird: BirdSpecies;
   confidence: number;
-  alternates: Array<{ bird: BirdSpecies; confidence: number }>;
+}
+
+export interface IdentifyResult {
+  detectedBirds: DetectedBird[];
 }
 
 interface AudioRecorderProps {
@@ -105,7 +108,7 @@ export function AudioRecorder({ onIdentified }: AudioRecorderProps) {
     });
   }, []);
 
-  const identifyBird = useCallback(async (audioBlob: Blob, duration: number) => {
+  const identifyBirds = useCallback(async (audioBlob: Blob, duration: number) => {
     setIsAnalyzing(true);
     setError(null);
     try {
@@ -121,7 +124,7 @@ export function AudioRecorder({ onIdentified }: AudioRecorderProps) {
       const result: IdentifyResult = await res.json();
       onIdentified(result);
     } catch {
-      setError('Failed to identify bird. Please try again.');
+      setError('Failed to identify birds. Please try again.');
     } finally {
       setIsAnalyzing(false);
     }
@@ -135,12 +138,11 @@ export function AudioRecorder({ onIdentified }: AudioRecorderProps) {
     const finalDuration = recordingTimeRef.current;
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       const recorder = mediaRecorderRef.current;
-      // Override onstop to use the captured final duration
       recorder.onstop = () => {
         const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
         const url = URL.createObjectURL(blob);
         setAudioUrl(url);
-        identifyBird(blob, finalDuration);
+        identifyBirds(blob, finalDuration);
       };
       recorder.stop();
     }
@@ -152,7 +154,7 @@ export function AudioRecorder({ onIdentified }: AudioRecorderProps) {
     }
     setIsRecording(false);
     setAnalyser(null);
-  }, [identifyBird]);
+  }, [identifyBirds]);
 
   const startRecording = useCallback(async () => {
     setError(null);
@@ -191,7 +193,7 @@ export function AudioRecorder({ onIdentified }: AudioRecorderProps) {
     } catch {
       setError('Microphone access denied. Please allow microphone access or upload a file.');
     }
-  }, [identifyBird, stopRecording]);
+  }, [stopRecording]);
 
   const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -199,8 +201,8 @@ export function AudioRecorder({ onIdentified }: AudioRecorderProps) {
     setError(null);
     const url = URL.createObjectURL(file);
     setAudioUrl(url);
-    identifyBird(file, 5);
-  }, [identifyBird]);
+    identifyBirds(file, 5);
+  }, [identifyBirds]);
 
   const clearAudio = useCallback(() => {
     if (audioUrl) URL.revokeObjectURL(audioUrl);
@@ -218,7 +220,7 @@ export function AudioRecorder({ onIdentified }: AudioRecorderProps) {
   return (
     <div className="space-y-4">
       {/* Waveform */}
-      <div className="bg-[#141b14] rounded-xl p-3 h-32 border border-green-900/30">
+      <div className="bg-[#1d2021] rounded-xl p-3 h-32 border border-[#504945]/50">
         <WaveformVisualizer analyser={analyser} isRecording={isRecording} />
       </div>
 
@@ -227,7 +229,7 @@ export function AudioRecorder({ onIdentified }: AudioRecorderProps) {
         {!isRecording ? (
           <Button
             onClick={startRecording}
-            className="bg-green-600 hover:bg-green-700 text-white gap-2 h-12 px-8 text-base font-semibold rounded-full"
+            className="bg-[#b8bb26] hover:bg-[#98971a] text-[#282828] gap-2 h-12 px-8 text-base font-semibold rounded-full"
             disabled={isAnalyzing}
           >
             <Mic className="w-5 h-5" />
@@ -236,8 +238,7 @@ export function AudioRecorder({ onIdentified }: AudioRecorderProps) {
         ) : (
           <Button
             onClick={stopRecording}
-            variant="destructive"
-            className="gap-2 h-12 px-8 text-base font-semibold rounded-full animate-pulse"
+            className="bg-[#fb4934] hover:bg-[#cc241d] text-[#fbf1c7] gap-2 h-12 px-8 text-base font-semibold rounded-full animate-pulse"
           >
             <MicOff className="w-5 h-5" />
             Stop ({recordingTime}s)
@@ -247,7 +248,7 @@ export function AudioRecorder({ onIdentified }: AudioRecorderProps) {
         <div className="relative">
           <Button
             variant="outline"
-            className="gap-2 h-12 px-8 rounded-full border-green-700 text-green-300 hover:bg-green-900/30"
+            className="gap-2 h-12 px-8 rounded-full border-[#665c54] text-[#bdae93] hover:bg-[#3c3836]/70 hover:text-[#ebdbb2]"
             disabled={isRecording || isAnalyzing}
             onClick={() => fileInputRef.current?.click()}
           >
@@ -266,9 +267,9 @@ export function AudioRecorder({ onIdentified }: AudioRecorderProps) {
 
       {/* Audio preview */}
       {audioUrl && (
-        <div className="flex items-center gap-3 bg-green-950/30 rounded-lg p-3 border border-green-900/40">
+        <div className="flex items-center gap-3 bg-[#3c3836]/50 rounded-lg p-3 border border-[#504945]/50">
           <audio src={audioUrl} controls className="flex-1 h-8" />
-          <Button variant="ghost" size="icon" onClick={clearAudio} className="text-green-400 hover:text-red-400">
+          <Button variant="ghost" size="icon" onClick={clearAudio} className="text-[#a89984] hover:text-[#fb4934]">
             <X className="w-4 h-4" />
           </Button>
         </div>
@@ -276,7 +277,7 @@ export function AudioRecorder({ onIdentified }: AudioRecorderProps) {
 
       {/* Analyzing state */}
       {isAnalyzing && (
-        <div className="flex items-center justify-center gap-3 text-green-400 animate-pulse">
+        <div className="flex items-center justify-center gap-3 text-[#fabd2f] animate-pulse">
           <Loader2 className="w-5 h-5 animate-spin" />
           <span className="font-medium">Analyzing audio patterns...</span>
         </div>
@@ -284,7 +285,7 @@ export function AudioRecorder({ onIdentified }: AudioRecorderProps) {
 
       {/* Error */}
       {error && (
-        <p className="text-red-400 text-sm text-center bg-red-950/20 rounded-lg p-3 border border-red-900/30">{error}</p>
+        <p className="text-[#fb4934] text-sm text-center bg-[#fb4934]/10 rounded-lg p-3 border border-[#fb4934]/30">{error}</p>
       )}
     </div>
   );

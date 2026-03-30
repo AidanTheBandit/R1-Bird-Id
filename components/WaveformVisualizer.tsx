@@ -25,13 +25,13 @@ export function WaveformVisualizer({ analyser, isRecording }: WaveformVisualizer
       animFrameRef.current = requestAnimationFrame(draw);
       analyser.getByteTimeDomainData(dataArray);
 
-      ctx.fillStyle = 'rgb(20, 27, 20)';
+      ctx.fillStyle = '#1d2021';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.lineWidth = 2;
-      ctx.strokeStyle = '#4ade80';
-      ctx.shadowBlur = 8;
-      ctx.shadowColor = '#4ade80';
+      ctx.strokeStyle = '#fabd2f';
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = '#fabd2f';
       ctx.beginPath();
 
       const sliceWidth = canvas.width / bufferLength;
@@ -52,10 +52,10 @@ export function WaveformVisualizer({ analyser, isRecording }: WaveformVisualizer
     if (isRecording) {
       draw();
     } else {
-      ctx.fillStyle = 'rgb(20, 27, 20)';
+      ctx.fillStyle = '#1d2021';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.lineWidth = 2;
-      ctx.strokeStyle = '#4ade8060';
+      ctx.strokeStyle = '#fabd2f60';
       ctx.beginPath();
       ctx.moveTo(0, canvas.height / 2);
       ctx.lineTo(canvas.width, canvas.height / 2);

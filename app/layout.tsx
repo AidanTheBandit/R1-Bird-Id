@@ -14,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className="font-sans bg-[#080f08] min-h-screen text-green-50">
+      <body className="font-sans bg-[#1d2021] min-h-screen text-[#ebdbb2]">
         <Navigation />
         <main>{children}</main>
       </body>
