@@ -188,7 +188,7 @@ export function AudioRecorder({ onIdentified, toggleRef }: AudioRecorderProps) {
         }
       }, 1000);
     } catch {
-      setError('Microphone access denied. Please allow microphone access and try again.');
+      setError('Microphone access denied. Please allow access in your browser settings.');
     }
   }, [stopRecording]);
 

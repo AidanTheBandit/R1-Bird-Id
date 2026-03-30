@@ -3,10 +3,8 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { AudioRecorder, IdentifyResult, DetectedBird } from '@/components/AudioRecorder';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { addToJournal, isInJournal } from '@/lib/birdStore';
-import { BookOpen, CheckCircle, Star, ChevronRight, Bird, Sparkles, ExternalLink, PlusCircle } from 'lucide-react';
+import { BookOpen, CheckCircle, Star, ChevronRight, ExternalLink, PlusCircle } from 'lucide-react';
 import Link from 'next/link';
 
 interface BirdResultState extends DetectedBird {
@@ -98,63 +96,42 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#1d2021]">
-      {/* Hero — compact on R1, spacious on desktop */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#504945]/30 via-transparent to-transparent pointer-events-none" />
-        <div className="max-w-3xl mx-auto px-3 sm:px-4 pt-4 sm:pt-16 pb-3 sm:pb-10 text-center relative">
-          <div className="hidden sm:inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#504945]/50 border border-[#665c54]/50 text-[#fabd2f] text-xs font-medium mb-6">
-            <Sparkles className="w-3.5 h-3.5" />
-            AI-Powered Bird Identification
-          </div>
-          {/* Compact title on R1, large on desktop */}
-          <div className="flex sm:hidden items-center justify-center gap-2 mb-2">
-            <Bird className="w-5 h-5 text-[#fabd2f]" />
-            <h1 className="text-base font-bold text-[#fbf1c7]">BirdID</h1>
-            <span className="text-[#928374] text-xs">— identify by sound</span>
-          </div>
-          <h1 className="hidden sm:block text-4xl sm:text-5xl font-extrabold text-[#fbf1c7] mb-4 leading-tight">
-            Identify Birds<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#fabd2f] to-[#fe8019]">
-              by Their Song
-            </span>
+      {/* App header — cozy, compact on R1 */}
+      <section className="max-w-3xl mx-auto px-3 sm:px-4 pt-4 sm:pt-10 pb-3 sm:pb-6 text-center">
+        {/* Desktop: warm title */}
+        <div className="hidden sm:block mb-1">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-[#fbf1c7] leading-tight">
+            🐦 Your Field Guide
           </h1>
-          <p className="hidden sm:block text-[#a89984] text-lg max-w-xl mx-auto">
-            Hold your device near a bird and tap the button. Detects multiple species per recording.
+          <p className="text-[#928374] text-base mt-2">
+            Hold still, listen close — tap to identify a bird by its song.
           </p>
-          {/* R1 hint about PTT button */}
-          <p className="sm:hidden text-[#928374] text-xs">Press the side button (PTT) or tap to record</p>
         </div>
+        {/* R1: single compact line */}
+        <p className="sm:hidden text-[#928374] text-xs">
+          Press the side button (PTT) or tap the circle to listen
+        </p>
       </section>
 
       {/* Recorder */}
       <section className="max-w-3xl mx-auto px-3 sm:px-4 pb-4 sm:pb-10">
-        <Card className="bg-[#282828] border-[#504945]/60 shadow-2xl">
-          <CardContent className="p-3 sm:p-8">
-            <div className="hidden sm:flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-[#504945]/50 border border-[#665c54]/60 flex items-center justify-center">
-                <Bird className="w-5 h-5 text-[#fabd2f]" />
-              </div>
-              <div>
-                <h2 className="font-bold text-[#ebdbb2]">Listen</h2>
-                <p className="text-[#928374] text-xs">Hold near a bird and press the button to identify</p>
-              </div>
-            </div>
+        <div className="bg-[#282828] rounded-2xl border border-[#3c3836] shadow-lg">
+          <div className="p-3 sm:p-8">
             <AudioRecorder
               onIdentified={handleIdentified}
               toggleRef={toggleRecordingRef}
             />
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </section>
 
       {/* Results */}
       {results && results.length > 0 && (
         <section className="max-w-3xl mx-auto px-3 sm:px-4 pb-10 sm:pb-16 space-y-3 sm:space-y-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-[#fabd2f] font-semibold text-sm sm:text-base">
-              <Bird className="w-4 h-4 sm:w-5 sm:h-5" />
-              {results.length === 1 ? 'Bird Identified!' : `${results.length} Birds Detected`}
-            </div>
+            <p className="text-[#fabd2f] font-semibold text-sm sm:text-base">
+              {results.length === 1 ? '🐦 You spotted one!' : `🐦 You spotted ${results.length} birds!`}
+            </p>
             {results.length > 1 && !allAdded && (
               <Button
                 size="sm"
@@ -162,29 +139,28 @@ export default function HomePage() {
                 className="bg-[#b8bb26] hover:bg-[#98971a] text-[#282828] gap-1 sm:gap-1.5 rounded-full text-xs font-semibold h-7 px-3"
               >
                 <PlusCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                Add All
+                Save all
               </Button>
             )}
           </div>
 
           {results.map((r, idx) => (
-            <Card
+            <div
               key={r.bird.speciesCode}
-              className="bg-[#282828] border-[#fabd2f]/20 shadow-xl overflow-hidden"
+              className="bg-[#282828] rounded-2xl border border-[#3c3836] shadow-md overflow-hidden"
             >
-              <div className="bg-[#3c3836]/60 px-3 sm:px-6 py-2 sm:py-3 border-b border-[#504945]/60 flex items-center justify-between">
-                <span className="text-[#a89984] text-xs font-medium">
-                  {idx === 0 ? '🏆 Best match' : `#${idx + 1} detected`}
+              {/* Cozy card header */}
+              <div className="px-3 sm:px-5 py-2 border-b border-[#3c3836] flex items-center justify-between">
+                <span className="text-[#928374] text-xs">
+                  {idx === 0 ? '🌟 Best match' : `#${idx + 1} also detected`}
                 </span>
-                <Badge variant="outline" className="border-[#665c54] text-[#bdae93] text-xs">
-                  {r.bird.family}
-                </Badge>
+                <span className="text-[#665c54] text-xs italic">{r.bird.family}</span>
               </div>
 
-              <CardContent className="p-3 sm:p-6">
+              <div className="p-3 sm:p-5">
                 <div className="flex gap-3 sm:gap-5">
-                  {/* Bird image — smaller on R1 */}
-                  <div className="flex-shrink-0 w-20 h-20 sm:w-36 sm:h-36 rounded-xl overflow-hidden bg-[#3c3836]/60 border border-[#504945]/60">
+                  {/* Bird image */}
+                  <div className="flex-shrink-0 w-20 h-20 sm:w-36 sm:h-36 rounded-xl overflow-hidden bg-[#3c3836]/60 border border-[#504945]/40">
                     {!r.imgError ? (
                       <img
                         src={r.bird.imageUrl}
@@ -214,13 +190,12 @@ export default function HomePage() {
                       <p className="text-[#928374] italic text-xs">{r.bird.scientificName}</p>
                     </div>
 
-                    <span className={`flex items-center gap-1 text-xs sm:text-base font-bold ${confidenceColor(r.confidence)}`}>
-                      <Star className="w-3 h-3 sm:w-4 sm:h-4" />
-                      {r.confidence}%
+                    <span className={`flex items-center gap-1 text-xs sm:text-sm font-semibold ${confidenceColor(r.confidence)}`}>
+                      <Star className="w-3 h-3" />
+                      {r.confidence}% match
                     </span>
 
-                    {/* Description — truncated on R1 */}
-                    <p className="text-[#d5c4a1] text-xs leading-snug line-clamp-2 hidden sm:block sm:line-clamp-none">
+                    <p className="text-[#d5c4a1] text-xs leading-snug hidden sm:block sm:line-clamp-none">
                       {r.bird.description}
                     </p>
 
@@ -240,12 +215,12 @@ export default function HomePage() {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="border-[#665c54] text-[#a89984] gap-1 rounded-full cursor-default text-xs h-7 px-2.5 sm:px-3"
+                          className="border-[#504945] text-[#928374] gap-1 rounded-full cursor-default text-xs h-7 px-2.5 sm:px-3"
                           disabled
                         >
                           <CheckCircle className="w-3 h-3 text-[#b8bb26]" />
                           <span className="hidden sm:inline">In Journal</span>
-                          <span className="sm:hidden">Saved</span>
+                          <span className="sm:hidden">Saved ✓</span>
                         </Button>
                       )}
                       <a href={r.bird.wikiUrl} target="_blank" rel="noopener noreferrer">
@@ -255,21 +230,21 @@ export default function HomePage() {
                           className="text-[#83a598] hover:text-[#8ec07c] gap-1 rounded-full text-xs h-7 px-2 sm:px-3"
                         >
                           <ExternalLink className="w-3 h-3" />
-                          <span className="hidden sm:inline">Learn More</span>
+                          <span className="hidden sm:inline">Learn more</span>
                         </Button>
                       </a>
                     </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
 
           {allAdded && (
             <div className="text-center pt-1">
               <Link href="/journal">
                 <Button variant="ghost" className="text-[#fabd2f] hover:text-[#d79921] gap-2 text-xs sm:text-sm">
-                  View My Journal
+                  Open your journal
                   <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
                 </Button>
               </Link>
@@ -278,23 +253,11 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* Tips — only shown before first identification, condensed on R1 */}
+      {/* Hint — only shown before first identification */}
       {!results && (
-        <section className="max-w-3xl mx-auto px-3 sm:px-4 pb-8 sm:pb-16">
-          <div className="grid grid-cols-3 sm:grid-cols-3 gap-2 sm:gap-4">
-            {[
-              { icon: '🎙️', title: 'Get Close', desc: 'Hold near the bird' },
-              { icon: '🌿', title: 'Quiet Spot', desc: 'Away from traffic' },
-              { icon: '⏱️', title: '5–10 sec', desc: 'More time = more birds' },
-            ].map(tip => (
-              <div key={tip.title} className="bg-[#282828] rounded-xl p-2 sm:p-4 border border-[#504945]/50 text-center">
-                <div className="text-xl sm:text-3xl mb-1 sm:mb-2">{tip.icon}</div>
-                <h3 className="font-semibold text-[#d5c4a1] text-xs sm:text-sm mb-0.5 sm:mb-1">{tip.title}</h3>
-                <p className="text-[#928374] text-xs hidden sm:block">{tip.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        <p className="max-w-3xl mx-auto px-3 sm:px-4 pb-8 sm:pb-16 text-center text-[#665c54] text-xs sm:text-sm">
+          🎙️ Get close &nbsp;·&nbsp; 🌿 Find a quiet spot &nbsp;·&nbsp; ⏱️ Record 5–10 seconds
+        </p>
       )}
     </div>
   );
