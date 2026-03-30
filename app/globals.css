@@ -105,3 +105,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* R1 pulse animation for the listen button */
+@keyframes r1-pulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(184, 187, 38, 0.2); }
+  50%       { box-shadow: 0 0 28px rgba(184, 187, 38, 0.5); }
+}
