@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=240, height=282, user-scalable=no, initial-scale=1.0">
+    <title>BirdLog</title>
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <div id="header">
+            <button id="btn-back" class="hdr-btn hidden" aria-label="Back">◂</button>
+            <span id="header-title">BirdLog</span>
+            <button id="btn-catalog" class="hdr-btn" aria-label="Catalog">☰</button>
+        </div>
+
+        <!-- View: Listen -->
+        <div id="view-listen" class="view active">
+            <div id="listen-circle-wrap">
+                <div id="listen-circle">
+                    <svg id="bird-icon" viewBox="0 0 64 64" width="56" height="56">
+                        <path d="M48 18c-2-4-7-6-12-5l-4 1c-3 1-6 4-7 7l-2 6-8 3c-2 1-3 3-2 5l1 2c1 2 3 2 5 1l5-2 3 4c2 3 5 5 9 5h6c3 0 6-2 7-5l2-6c1-3 1-7-1-10l-2-6z" fill="#b8bb26"/>
+                        <circle cx="40" cy="20" r="2" fill="#282828"/>
+                    </svg>
+                </div>
+                <canvas id="wave-canvas" width="200" height="50"></canvas>
+            </div>
+            <div id="listen-status">Press side button to listen</div>
+            <div id="listen-hint" class="hint">Hold to identify nearby birds</div>
+        </div>
+
+        <!-- View: Catalog -->
+        <div id="view-catalog" class="view">
+            <div id="catalog-header">
+                <span id="catalog-count">0 species</span>
+            </div>
+            <div id="catalog-list"></div>
+            <div id="catalog-empty">
+                <div class="empty-icon">🐦</div>
+                <div class="empty-text">No birds yet</div>
+                <div class="empty-hint">Press side button to start listening</div>
+            </div>
+        </div>
+
+        <!-- View: Detail -->
+        <div id="view-detail" class="view">
+            <div id="detail-scroll">
+                <div id="detail-img-wrap">
+                    <img id="detail-img" src="" alt="Bird photo">
+                    <div id="detail-img-overlay">
+                        <div id="detail-name"></div>
+                        <div id="detail-sci"></div>
+                    </div>
+                </div>
+                <div id="detail-body">
+                    <div id="detail-desc" class="detail-section"></div>
+                    <div id="detail-stats" class="detail-section">
+                        <div class="stat-row" id="stat-conservation">
+                            <span class="stat-label">Status</span>
+                            <span class="stat-value" id="val-conservation">—</span>
+                        </div>
+                        <div class="stat-row" id="stat-lifespan">
+                            <span class="stat-label">Lifespan</span>
+                            <span class="stat-value" id="val-lifespan">—</span>
+                        </div>
+                        <div class="stat-row" id="stat-mass">
+                            <span class="stat-label">Mass</span>
+                            <span class="stat-value" id="val-mass">—</span>
+                        </div>
+                    </div>
+                    <div id="detail-date" class="detail-section">
+                        <span class="stat-label">Spotted</span>
+                        <span class="stat-value" id="val-date">—</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading overlay -->
+        <div id="loading" class="hidden">
+            <div class="loader"></div>
+            <div id="loading-text">Identifying…</div>
+        </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>
