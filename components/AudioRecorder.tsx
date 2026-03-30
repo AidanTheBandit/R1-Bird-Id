@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, MutableRefObject } from 'react';
 import { Button } from '@/components/ui/button';
 import { WaveformVisualizer } from './WaveformVisualizer';
 import { Mic, MicOff, Upload, X, Loader2 } from 'lucide-react';
@@ -25,9 +25,11 @@ export interface IdentifyResult {
 
 interface AudioRecorderProps {
   onIdentified: (result: IdentifyResult) => void;
+  /** When provided, the ref is populated with a toggle function the R1 PTT button can call */
+  toggleRef?: MutableRefObject<(() => void) | null>;
 }
 
-export function AudioRecorder({ onIdentified }: AudioRecorderProps) {
+export function AudioRecorder({ onIdentified, toggleRef }: AudioRecorderProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -211,36 +213,48 @@ export function AudioRecorder({ onIdentified }: AudioRecorderProps) {
   }, [audioUrl]);
 
   useEffect(() => {
+    // Expose toggle function to the R1 PTT side button
+    if (toggleRef) {
+      toggleRef.current = () => {
+        if (isRecording) {
+          stopRecording();
+        } else {
+          startRecording();
+        }
+      };
+    }
     return () => {
+      if (toggleRef) toggleRef.current = null;
       if (timerRef.current) clearInterval(timerRef.current);
       if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
     };
-  }, []);
+  }, [isRecording, startRecording, stopRecording, toggleRef]);
 
   return (
-    <div className="space-y-4">
-      {/* Waveform */}
-      <div className="bg-[#1d2021] rounded-xl p-3 h-32 border border-[#504945]/50">
+    <div className="space-y-2 sm:space-y-4">
+      {/* Waveform — shorter on R1 to save vertical space */}
+      <div className="bg-[#1d2021] rounded-xl p-2 sm:p-3 h-16 sm:h-32 border border-[#504945]/50">
         <WaveformVisualizer analyser={analyser} isRecording={isRecording} />
       </div>
 
-      {/* Controls */}
-      <div className="flex flex-col sm:flex-row gap-3 items-center justify-center">
+      {/* Controls — compact on R1 */}
+      <div className="flex flex-row gap-2 items-center justify-center sm:flex-row sm:gap-3">
         {!isRecording ? (
           <Button
             onClick={startRecording}
-            className="bg-[#b8bb26] hover:bg-[#98971a] text-[#282828] gap-2 h-12 px-8 text-base font-semibold rounded-full"
+            className="bg-[#b8bb26] hover:bg-[#98971a] text-[#282828] gap-1 sm:gap-2 h-9 sm:h-12 px-4 sm:px-8 text-sm sm:text-base font-semibold rounded-full flex-1 sm:flex-none"
             disabled={isAnalyzing}
           >
-            <Mic className="w-5 h-5" />
-            Start Recording
+            <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">Start Recording</span>
+            <span className="sm:hidden">Record</span>
           </Button>
         ) : (
           <Button
             onClick={stopRecording}
-            className="bg-[#fb4934] hover:bg-[#cc241d] text-[#fbf1c7] gap-2 h-12 px-8 text-base font-semibold rounded-full animate-pulse"
+            className="bg-[#fb4934] hover:bg-[#cc241d] text-[#fbf1c7] gap-1 sm:gap-2 h-9 sm:h-12 px-4 sm:px-8 text-sm sm:text-base font-semibold rounded-full flex-1 sm:flex-none animate-pulse"
           >
-            <MicOff className="w-5 h-5" />
+            <MicOff className="w-4 h-4 sm:w-5 sm:h-5" />
             Stop ({recordingTime}s)
           </Button>
         )}
@@ -248,12 +262,13 @@ export function AudioRecorder({ onIdentified }: AudioRecorderProps) {
         <div className="relative">
           <Button
             variant="outline"
-            className="gap-2 h-12 px-8 rounded-full border-[#665c54] text-[#bdae93] hover:bg-[#3c3836]/70 hover:text-[#ebdbb2]"
+            className="gap-1 sm:gap-2 h-9 sm:h-12 px-3 sm:px-8 rounded-full border-[#665c54] text-[#bdae93] hover:bg-[#3c3836]/70 hover:text-[#ebdbb2] text-sm"
             disabled={isRecording || isAnalyzing}
             onClick={() => fileInputRef.current?.click()}
           >
-            <Upload className="w-5 h-5" />
-            Upload Audio
+            <Upload className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">Upload Audio</span>
+            <span className="sm:hidden">Upload</span>
           </Button>
           <input
             ref={fileInputRef}
@@ -267,19 +282,19 @@ export function AudioRecorder({ onIdentified }: AudioRecorderProps) {
 
       {/* Audio preview */}
       {audioUrl && (
-        <div className="flex items-center gap-3 bg-[#3c3836]/50 rounded-lg p-3 border border-[#504945]/50">
-          <audio src={audioUrl} controls className="flex-1 h-8" />
-          <Button variant="ghost" size="icon" onClick={clearAudio} className="text-[#a89984] hover:text-[#fb4934]">
-            <X className="w-4 h-4" />
+        <div className="flex items-center gap-2 sm:gap-3 bg-[#3c3836]/50 rounded-lg p-2 sm:p-3 border border-[#504945]/50">
+          <audio src={audioUrl} controls className="flex-1 h-7 sm:h-8" />
+          <Button variant="ghost" size="icon" onClick={clearAudio} className="text-[#a89984] hover:text-[#fb4934] h-7 w-7 sm:h-9 sm:w-9">
+            <X className="w-3 h-3 sm:w-4 sm:h-4" />
           </Button>
         </div>
       )}
 
       {/* Analyzing state */}
       {isAnalyzing && (
-        <div className="flex items-center justify-center gap-3 text-[#fabd2f] animate-pulse">
-          <Loader2 className="w-5 h-5 animate-spin" />
-          <span className="font-medium">Analyzing audio patterns...</span>
+        <div className="flex items-center justify-center gap-2 sm:gap-3 text-[#fabd2f] animate-pulse">
+          <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
+          <span className="font-medium text-sm sm:text-base">Analyzing audio…</span>
         </div>
       )}
 
