@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Gruvbox color tokens as CSS custom properties for use in arbitrary Tailwind values */
+:root {
+  --gb-bg-hard: #1d2021;
+  --gb-bg0:     #282828;
+  --gb-bg1:     #3c3836;
+  --gb-bg2:     #504945;
+  --gb-bg3:     #665c54;
+  --gb-bg4:     #7c6f64;
+  --gb-gray:    #928374;
+  --gb-fg4:     #a89984;
+  --gb-fg3:     #bdae93;
+  --gb-fg2:     #d5c4a1;
+  --gb-fg1:     #ebdbb2;
+  --gb-fg0:     #fbf1c7;
+  --gb-red:     #fb4934;
+  --gb-green:   #b8bb26;
+  --gb-yellow:  #fabd2f;
+  --gb-blue:    #83a598;
+  --gb-purple:  #d3869b;
+  --gb-aqua:    #8ec07c;
+  --gb-orange:  #fe8019;
+  --gb-red-d:   #cc241d;
+  --gb-green-d: #98971a;
+  --gb-yellow-d:#d79921;
+  --gb-blue-d:  #458588;
+  --gb-aqua-d:  #689d6a;
+  --gb-orange-d:#d65d0e;
+}
+
+@layer base {
+  /* Gruvbox Dark theme — used for both :root and .dark since the app is dark-only */
+  :root {
+    /* Gruvbox bg0 = #282828, bg_hard = #1d2021 */
+    --background: 0 0% 16%;
+    /* fg1 = #ebdbb2 */
+    --foreground: 41 64% 81%;
+    /* bg1 = #3c3836 */
+    --card: 20 5% 22%;
+    --card-foreground: 41 64% 81%;
+    --popover: 20 5% 22%;
+    --popover-foreground: 41 64% 81%;
+    /* yellow bright = #fabd2f */
+    --primary: 43 94% 58%;
+    /* bg0 */
+    --primary-foreground: 0 0% 16%;
+    /* bg2 = #504945 */
+    --secondary: 18 7% 29%;
+    --secondary-foreground: 41 64% 81%;
+    --muted: 18 7% 29%;
+    /* gray = #928374 */
+    --muted-foreground: 26 11% 51%;
+    /* bg3 = #665c54 */
+    --accent: 22 10% 37%;
+    --accent-foreground: 41 64% 81%;
+    /* red bright = #fb4934 */
+    --destructive: 5 96% 59%;
+    --destructive-foreground: 41 64% 81%;
+    --border: 22 10% 37%;
+    --input: 18 7% 29%;
+    --ring: 43 94% 58%;
+    --chart-1: 43 94% 58%;
+    --chart-2: 108 30% 62%;
+    --chart-3: 29 99% 55%;
+    --chart-4: 62 66% 44%;
+    --chart-5: 337 42% 68%;
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 0 0% 16%;
+    --foreground: 41 64% 81%;
+    --card: 20 5% 22%;
+    --card-foreground: 41 64% 81%;
+    --popover: 20 5% 22%;
+    --popover-foreground: 41 64% 81%;
+    --primary: 43 94% 58%;
+    --primary-foreground: 0 0% 16%;
+    --secondary: 18 7% 29%;
+    --secondary-foreground: 41 64% 81%;
+    --muted: 18 7% 29%;
+    --muted-foreground: 26 11% 51%;
+    --accent: 22 10% 37%;
+    --accent-foreground: 41 64% 81%;
+    --destructive: 5 96% 59%;
+    --destructive-foreground: 41 64% 81%;
+    --border: 22 10% 37%;
+    --input: 18 7% 29%;
+    --ring: 43 94% 58%;
+    --chart-1: 43 94% 58%;
+    --chart-2: 108 30% 62%;
+    --chart-3: 29 99% 55%;
+    --chart-4: 62 66% 44%;
+    --chart-5: 337 42% 68%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
