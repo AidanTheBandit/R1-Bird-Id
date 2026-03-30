@@ -53,12 +53,33 @@ export function AudioRecorder({ onIdentified, toggleRef }: AudioRecorderProps) {
           const analyserNode = audioCtx.createAnalyser();
           analyserNode.fftSize = 2048;
 
+          // Route through a silent gain node connected to destination so the
+          // audio graph actually processes the buffer (required for the
+          // AnalyserNode to receive data).
+          const gainNode = audioCtx.createGain();
+          gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+          gainNode.connect(audioCtx.destination);
+
           const source = audioCtx.createBufferSource();
           source.buffer = audioBuffer;
           source.connect(analyserNode);
+          analyserNode.connect(gainNode);
+
+          // Start playback so audio flows through the analyser, then wait for
+          // at least one processing chunk before reading frequency data.
+          source.start(0);
+          await new Promise<void>(res => setTimeout(res, 100));
 
           const freqData = new Uint8Array(analyserNode.frequencyBinCount);
           analyserNode.getByteFrequencyData(freqData);
+
+          try { source.stop(); } catch (e) {
+            // InvalidStateError is expected when the buffer is very short and
+            // has already finished playing before we call stop().
+            if (!(e instanceof DOMException && e.name === 'InvalidStateError')) {
+              console.warn('Unexpected error stopping audio source:', e);
+            }
+          }
 
           let maxAmp = 0;
           let maxIdx = 0;
@@ -80,7 +101,11 @@ export function AudioRecorder({ onIdentified, toggleRef }: AudioRecorderProps) {
 
           const sampleRate = audioCtx.sampleRate;
           const dominantFreq = (maxIdx / freqData.length) * (sampleRate / 2);
-          const minFreq = (minFreqIdx / freqData.length) * (sampleRate / 2);
+          // Guard against the case where no bin exceeded the threshold (silent
+          // recording): fall back to 0 rather than returning sampleRate/2.
+          const minFreq = minFreqIdx < freqData.length
+            ? (minFreqIdx / freqData.length) * (sampleRate / 2)
+            : 0;
           const maxFreq = (maxFreqIdx / freqData.length) * (sampleRate / 2);
           const avgAmp = totalAmp / freqData.length;
 
